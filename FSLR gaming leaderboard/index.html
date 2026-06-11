@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FSLR Official Gamer Skill Ranking</title>
+<style>
+  :root{
+    --bg:#1a1f26; --panel:#232a33; --panel2:#2b333e; --border:#3a4452;
+    --text:#e6e9ed; --muted:#8b96a5; --accent:#4a9eda; --gold:#f0b132;
+    --up:#3fbf61; --down:#e05a4e; --hold:#6b7686;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.5}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:980px;margin:0 auto;padding:0 16px}
+
+  /* top bar */
+  .topbar{background:#11151a;border-bottom:1px solid var(--border);padding:10px 0;font-size:12px;color:var(--muted)}
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+  .live{color:var(--up);font-weight:700}
+  .live::before{content:"●";margin-right:5px;animation:blink 1.4s infinite}
+  @keyframes blink{50%{opacity:.25}}
+
+  /* header */
+  header{background:linear-gradient(180deg,#202733 0%,#1a1f26 100%);border-bottom:2px solid var(--gold);padding:34px 0 26px}
+  .org{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .crest{width:64px;height:64px;border-radius:8px;background:linear-gradient(135deg,#f0b132,#c97f1b);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#11151a;letter-spacing:-1px;box-shadow:0 0 0 3px #11151a,0 0 0 4px var(--gold)}
+  h1{font-size:26px;font-weight:800;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .sanction{display:inline-block;margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);border:1px solid var(--gold);border-radius:3px;padding:3px 10px}
+
+  /* ticker */
+  .ticker{background:#27200e;border-top:1px solid #57430f;border-bottom:1px solid #57430f;padding:8px 0;font-size:13px;overflow:hidden;white-space:nowrap}
+  .ticker span{display:inline-block;padding-left:100%;animation:scroll 28s linear infinite;color:#f5d27a}
+  .ticker b{color:var(--gold)}
+  @keyframes scroll{to{transform:translateX(-100%)}}
+
+  /* section titles */
+  .sect{margin:36px 0 14px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .sect h2{font-size:17px;text-transform:uppercase;letter-spacing:1.2px}
+  .sect .meta{font-size:12px;color:var(--muted)}
+
+  /* table */
+  .board{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .row-head,.row{display:grid;grid-template-columns:64px 56px 1fr 110px 110px 96px;align-items:center;padding:0 14px}
+  .row-head{background:#161b21;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);height:36px}
+  .row{height:78px;border-top:1px solid var(--border);cursor:pointer;transition:background .15s}
+  .row:hover{background:var(--panel2)}
+  .rank{font-size:26px;font-weight:800;color:var(--muted)}
+  .row.r1 .rank{color:var(--gold)}
+  .move{font-size:13px;font-weight:700}
+  .move.up{color:var(--up)} .move.down{color:var(--down)} .move.hold{color:var(--hold)}
+  .pl{display:flex;align-items:center;gap:12px;min-width:0}
+  .ava{width:46px;height:46px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#11151a}
+  .nick{font-weight:700;font-size:16px}
+  .real{font-size:12px;color:var(--muted)}
+  .statcol{font-size:13px;color:var(--muted);text-align:center}
+  .statcol b{display:block;color:var(--text);font-size:14px}
+  .fogsr{text-align:right;font-size:24px;font-weight:800;color:var(--accent)}
+  .row.r1 .fogsr{color:var(--gold)}
+  .fogsr small{display:block;font-size:10px;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+
+  /* detail panel */
+  .detail{display:none;border-top:1px dashed var(--border);background:#1e242c;padding:18px 20px;grid-column:1/-1}
+  .detail.open{display:block}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
+  .stat{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:10px 12px}
+  .stat .k{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .stat .v{font-size:16px;font-weight:700;margin-top:2px}
+  .stat .n{font-size:11px;color:var(--muted);margin-top:3px;font-style:italic}
+  .resume{font-size:13.5px;color:#c6cdd6}
+  .resume b{color:var(--text)}
+  .flag{font-size:11px;border-radius:3px;padding:2px 7px;font-weight:700;letter-spacing:.5px;display:inline-block;margin-top:8px}
+  .flag.warn{background:#3a2c14;color:var(--gold);border:1px solid #57430f}
+  .flag.ok{background:#15301d;color:var(--up);border:1px solid #1f4a2c}
+
+  /* methodology */
+  .method{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:22px 24px;font-size:13.5px;color:#c6cdd6}
+  .method h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text);margin:16px 0 6px}
+  .method h3:first-child{margin-top:0}
+  .formula{background:#11151a;border:1px solid var(--border);border-radius:5px;padding:12px 16px;font-family:Consolas,monospace;font-size:13px;color:var(--accent);margin:8px 0;overflow-x:auto}
+  .method ol{margin:6px 0 6px 20px}
+  .method li{margin-bottom:6px}
+  .fine{font-size:11.5px;color:var(--muted);font-style:italic;margin-top:14px;border-top:1px dashed var(--border);padding-top:10px}
+
+  /* videos */
+  .vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .vid{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .vid iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+  .facade{position:relative;width:100%;aspect-ratio:16/9;cursor:pointer;background:#000;border:0;padding:0;display:block}
+  .facade img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;transition:opacity .15s}
+  .facade:hover img{opacity:1}
+  .facade .play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:44px;background:#212121cc;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+  .facade:hover .play{background:#f00}
+  .facade .play::after{content:"";border-style:solid;border-width:9px 0 9px 16px;border-color:transparent transparent transparent #fff;margin-left:3px}
+  .vid .cap{padding:10px 12px;font-size:12.5px}
+  .vid .cap b{display:block;font-size:13px;margin-bottom:2px}
+  .vid .cap span{color:var(--muted)}
+
+  footer{margin:48px 0 0;border-top:1px solid var(--border);padding:22px 0 34px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.8}
+
+  @media(max-width:640px){
+    .row-head,.row{grid-template-columns:44px 36px 1fr 86px}
+    .statcol.hidem{display:none}
+    .rank{font-size:20px}.fogsr{font-size:19px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>FSLR COMPETITIVE INTEGRITY COMMITTEE &nbsp;|&nbsp; GLOBAL RANKING AUTHORITY</span>
+    <span class="live">LIVE &mdash; Ranking Period 2026.06</span>
+  </div>
+</div>
+
+<header>
+  <div class="wrap">
+    <div class="org">
+      <div class="crest">FSLR</div>
+      <div>
+        <h1>FSLR Official Gamer Skill Ranking</h1>
+        <div class="sub">The definitive, fully sanctioned, completely impartial measurement of gaming ability. Updated whenever the committee feels like it.</div>
+      </div>
+    </div>
+    <span class="sanction">Sanctioned &bull; Official &bull; Final &bull; No Appeals</span>
+  </div>
+</header>
+
+<div class="ticker"><span>
+  <b>BREAKING:</b> Ludwig rises to #2 following reported 1v1 League of Legends tournament performance &mdash; claim self-reported on live broadcast and accepted without verification per FSLR Charter §4.2 ("Whatever He Says") &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+  <b>RULING:</b> Rae's Platinum 3 rating adjusted downward after Agent Pool audit reveals 100% Viper pick rate &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+  <b>NOTICE:</b> Squeex remains exempt from Valorant evaluation; committee cites "skill ceiling exceeds measurement instrument" &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+  <b>REMINDER:</b> All rankings are final. The committee does not respond to chat.
+</span></div>
+
+<div class="wrap">
+
+  <div class="sect">
+    <h2>World Ranking &mdash; June 10, 2026</h2>
+    <span class="meta">FOGSR™ Rating 3.0 &nbsp;|&nbsp; click a player for full dossier</span>
+  </div>
+
+  <div class="board">
+    <div class="row-head">
+      <span>Rank</span><span>+/-</span><span>Player</span>
+      <span class="statcol hidem" style="text-align:center">CS2 Premier</span>
+      <span class="statcol hidem" style="text-align:center">Valorant</span>
+      <span style="text-align:right">FOGSR™</span>
+    </div>
+
+    <!-- 1 SQUEEX -->
+    <div class="row r1" onclick="tg('d1')">
+      <span class="rank">#1</span>
+      <span class="move hold">&ndash;</span>
+      <div class="pl">
+        <div class="ava" style="background:linear-gradient(135deg,#f0b132,#e8893a)">SQ</div>
+        <div><div class="nick">Squeex</div><div class="real">The Benchmark</div></div>
+      </div>
+      <div class="statcol hidem"><b>25,000+</b>FACEIT 10</div>
+      <div class="statcol hidem"><b>EXEMPT</b>see ruling</div>
+      <div class="fogsr">1.47<small>rating</small></div>
+    </div>
+    <div class="detail" id="d1">
+      <div class="dgrid">
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">25,000+</div><div class="n">Top of the ladder. Verified repeatedly, reluctantly, by everyone he queues against.</div></div>
+        <div class="stat"><div class="k">FACEIT</div><div class="v">Level 10</div><div class="n">Maximum value. The scale does not go higher. The committee checked.</div></div>
+        <div class="stat"><div class="k">Speedrun Division</div><div class="v">SM64 &mdash; 72 Star, 50+ min</div><div class="n">Legacy Skill Coefficient applied at full weight.</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Exempt</div><div class="n">Per Committee Ruling 2026-03: "skill ceiling exceeds measurement instrument."</div></div>
+      </div>
+      <div class="resume"><b>Committee assessment:</b> The reference point against which the other three are measured. Mechanical aim, speedrun discipline, and the quiet menace of someone who is simply better at video games. FOGSR 1.47 represents the largest gap between #1 and #2 in ranking history.</div>
+      <span class="flag ok">STATUS: UNCONTESTED</span>
+    </div>
+
+    <!-- 2 LUDWIG -->
+    <div class="row" onclick="tg('d2')">
+      <span class="rank">#2</span>
+      <span class="move up">&#9650;2</span>
+      <div class="pl">
+        <div class="ava" style="background:linear-gradient(135deg,#7ec8f5,#3a86c8)">LU</div>
+        <div><div class="nick">Ludwig</div><div class="real">Self-Reported Phenom</div></div>
+      </div>
+      <div class="statcol hidem"><b>13,000</b>Premier</div>
+      <div class="statcol hidem"><b>Platinum*</b>carried</div>
+      <div class="fogsr">1.09<small>rating</small></div>
+    </div>
+    <div class="detail" id="d2">
+      <div class="dgrid">
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">13,000</div><div class="n">Highest of the non-Squeex division. He will mention this.</div></div>
+        <div class="stat"><div class="k">League of Legends</div><div class="v">Platinum</div><div class="n">Recent form: 1v1 tournament appearance (source: himself, live, unprompted).</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Platinum*</div><div class="n">*Carry Coefficient ×0.40 applied — duo partner skill discrepancy detected.</div></div>
+        <div class="stat"><div class="k">Live Tournament Adjustment</div><div class="v">+0.21</div><div class="n">Awarded under Charter §4.2 ("Whatever He Says"). Verification pending since broadcast.</div></div>
+      </div>
+      <div class="resume"><b>Committee assessment:</b> Veteran of game shows, chessboxing, Melee, and now, reportedly, 1v1 League of Legends. Base rating 0.88 elevated to 1.09 by the largest Live Tournament Adjustment ever granted on the strength of a single on-stream claim. The committee notes the claim was delivered confidently.</div>
+      <span class="flag warn">RANK UNDER REVIEW &mdash; EVIDENCE: TRUST</span>
+    </div>
+
+    <!-- 3 FUSLIE -->
+    <div class="row" onclick="tg('d3')">
+      <span class="rank">#3</span>
+      <span class="move down">&#9660;1</span>
+      <div class="pl">
+        <div class="ava" style="background:linear-gradient(135deg,#f2a3c4,#c75d8f)">FU</div>
+        <div><div class="nick">Fuslie</div><div class="real">Two-Game Bronze Threat</div></div>
+      </div>
+      <div class="statcol hidem"><b>12,000</b>Premier</div>
+      <div class="statcol hidem"><b>Bronze 3</b>&nbsp;</div>
+      <div class="fogsr">1.04<small>rating</small></div>
+    </div>
+    <div class="detail" id="d3">
+      <div class="dgrid">
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">12,000</div><div class="n">Solid mid-table Premier rating. The committee respects it.</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Bronze 3</div><div class="n">Eligible for full Range Bonus (see below).</div></div>
+        <div class="stat"><div class="k">League of Legends</div><div class="v">Bronze</div><div class="n">Ranked in two separate titles. Both Bronze. Breadth Bonus: ×1.15.</div></div>
+        <div class="stat"><div class="k">Range Bonus</div><div class="v">×1.15</div><div class="n">Demonstrating consistent Bronze-level performance across multiple genres is, statistically, range.</div></div>
+      </div>
+      <div class="resume"><b>Committee assessment:</b> Displaced from #2 through no fault of her own. Holds ranked placements in two competitive titles — a feat of breadth the committee has chosen to reward — and a Premier rating that quietly clears one platinum-ranked colleague's. Ranking reflects versatility, longevity, and the committee's scoring weights working exactly as designed.</div>
+      <span class="flag ok">STATUS: STABLE &mdash; APPEAL DENIED PREEMPTIVELY</span>
+    </div>
+
+    <!-- 4 RAE -->
+    <div class="row" onclick="tg('d4')">
+      <span class="rank">#4</span>
+      <span class="move down">&#9660;1</span>
+      <div class="pl">
+        <div class="ava" style="background:linear-gradient(135deg,#b08df0,#6e4bc9)">RA</div>
+        <div><div class="nick">Rae</div><div class="real">Viper One-Trick (Audited)</div></div>
+      </div>
+      <div class="statcol hidem"><b>11,000</b>Premier</div>
+      <div class="statcol hidem"><b>Plat 3*</b>adjusted</div>
+      <div class="fogsr">1.01<small>rating</small></div>
+    </div>
+    <div class="detail" id="d4">
+      <div class="dgrid">
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">11,000</div><div class="n">A fine rating. The committee has no notes here.</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Platinum 3*</div><div class="n">*Agent Pool audit: 100% Viper. Diversity Multiplier ×0.25 applied per §7.1.</div></div>
+        <div class="stat"><div class="k">Agent Pool Diversity Index</div><div class="v">0.25 / 1.00</div><div class="n">One (1) agent detected. The committee asks: but can she do it on Sage?</div></div>
+        <div class="stat"><div class="k">Effective Val Rating</div><div class="v">Plat 3 × 0.25 ≈ Bronze-adjacent</div><div class="n">Math is math. Rulings are final.</div></div>
+      </div>
+      <div class="resume"><b>Committee assessment:</b> Objectively holds the highest Valorant rank on this leaderboard, a fact the methodology has been carefully constructed to neutralize. The Platinum 3 achievement is acknowledged, admired, and multiplied by 0.25. The committee thanks her for her understanding and reminds her that the appeals office is a P.O. box with no mail service.</div>
+      <span class="flag warn">PENALTY ACTIVE: SINGLE-AGENT DEPENDENCY</span>
+    </div>
+  </div>
+
+  <div class="sect">
+    <h2>Official Match Footage</h2>
+    <span class="meta">Evidence archive &mdash; reviewed by the committee at 2x speed</span>
+  </div>
+  <div class="vids">
+    <div class="vid">
+      <button class="facade" data-vid="tvXrkLT_Yic" aria-label="Play: Mario Party ft. Valkyrae, Squeex & Fuslie">
+        <img src="https://i.ytimg.com/vi/tvXrkLT_Yic/hqdefault.jpg" alt="Mario Party ft. Valkyrae, Squeex & Fuslie"><span class="play"></span>
+      </button>
+      <div class="cap"><b>Sanctioned Event: Mario Party</b><span>Admitted into evidence. Star counts under seal.</span></div>
+    </div>
+    <div class="vid">
+      <button class="facade" data-vid="t0M2vOoS02U" aria-label="Play: Ludwig Plays Mario Party with Valkyrae, Fuslie, Squeex">
+        <img src="https://i.ytimg.com/vi/t0M2vOoS02U/hqdefault.jpg" alt="Ludwig Plays Mario Party"><span class="play"></span>
+      </button>
+      <div class="cap"><b>Sanctioned Event: Mario Party (Ludwig POV)</b><span>POV footage submitted by the athlete himself. Naturally.</span></div>
+    </div>
+    <div class="vid">
+      <button class="facade" data-vid="gfGpp5Y9IXg" aria-label="Play: Team FSLR faces the ultimate gamer gauntlet">
+        <img src="https://i.ytimg.com/vi/gfGpp5Y9IXg/hqdefault.jpg" alt="Team FSLR Gamer Gauntlet"><span class="play"></span>
+      </button>
+      <div class="cap"><b>Combine Footage: The Gamer Gauntlet</b><span>Multi-cam scouting tape. Heavily weighted in absolutely nothing.</span></div>
+    </div>
+  </div>
+
+  <div class="sect">
+    <h2>Ranking Methodology</h2>
+    <span class="meta">FOGSR™ Rating 3.0 &mdash; peer-reviewed by the peers being ranked</span>
+  </div>
+  <div class="method">
+    <h3>The Formula</h3>
+    <div class="formula">FOGSR = (CS2 × 0.45) + (TAC_FPS × APD × CC × 0.20) + (MOBA × 0.15) + (LEGACY × 0.20) + LTA</div>
+    <h3>Coefficient Definitions</h3>
+    <ol>
+      <li><b>CS2 (45%)</b> — Premier rating, normalized. Weighted heaviest because it is the category in which the rankings happened to already be correct.</li>
+      <li><b>APD — Agent Pool Diversity Multiplier</b> — Valorant ratings achieved with a single agent are scaled ×0.25. Flexibility is a skill. Lineups are not a personality.</li>
+      <li><b>CC — Carry Coefficient</b> — Ranks achieved while duo-queued with a measurably superior partner are scaled ×0.40. The committee can tell. The committee can always tell.</li>
+      <li><b>LEGACY — Legacy Skill Coefficient</b> — Credits speedrunning, FACEIT level, and historical mechanical achievement. Currently benefits exactly one player. This is a coincidence.</li>
+      <li><b>LTA — Live Tournament Adjustment</b> — A flat bonus granted when a player states, on a live broadcast, that they performed well in a tournament. Footage optional. Confidence mandatory. (Charter §4.2.)</li>
+    </ol>
+    <h3>Independence Statement</h3>
+    <p>The FSLR Competitive Integrity Committee certifies that all weights were selected before checking what results they would produce, in the sense that they were adjusted afterward until the results matched. Any resemblance between this ranking and the committee's pre-existing opinions is coincidental and also intentional.</p>
+    <p class="fine">FOGSR™ is a registered trademark of nobody. Methodology subject to change retroactively, especially if Squeex loses at anything. Appeals may be submitted in writing and will be graded on penmanship, then discarded.</p>
+  </div>
+
+  <footer>
+    FSLR Official Gamer Skill Ranking &copy; 2026 — A wholly unofficial parody operated by fans.<br>
+    Not affiliated with Fuslie, Squeex, Ludwig, Valkyrae, Riot Games, Valve, FACEIT, Nintendo, or any governing body, real or imagined.<br>
+    All rankings final. The committee has gone home.
+  </footer>
+
+</div>
+
+<script>
+function tg(id){
+  const el=document.getElementById(id);
+  const open=el.classList.contains('open');
+  document.querySelectorAll('.detail').forEach(d=>d.classList.remove('open'));
+  if(!open) el.classList.add('open');
+}
+// Video facades: embeds need an HTTP referrer, which file:// doesn't send.
+// Hosted -> swap in the iframe. Local file -> open YouTube in a new tab.
+document.querySelectorAll('.facade').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const id=btn.dataset.vid;
+    if(location.protocol==='file:'){
+      window.open('https://www.youtube.com/watch?v='+id,'_blank');
+      return;
+    }
+    const f=document.createElement('iframe');
+    f.src='https://www.youtube.com/embed/'+id+'?autoplay=1';
+    f.allow='autoplay; encrypted-media; fullscreen';
+    f.allowFullscreen=true;
+    f.title=btn.getAttribute('aria-label');
+    btn.replaceWith(f);
+  });
+});
+</script>
+</body>
+</html>
