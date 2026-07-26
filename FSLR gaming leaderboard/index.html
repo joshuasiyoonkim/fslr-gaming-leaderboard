@@ -35,15 +35,36 @@
   .sanction{display:inline-block;margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--gold);border:1px solid var(--gold);border-radius:3px;padding:3px 10px}
 
   /* ticker */
-  .ticker{background:#27200e;border-top:1px solid #57430f;border-bottom:1px solid #57430f;padding:8px 0;font-size:13px;overflow:hidden;white-space:nowrap}
-  .ticker span{display:inline-block;padding-left:100%;animation:scroll 28s linear infinite;color:#f5d27a}
+  .ticker{background:#27200e;border-top:1px solid #57430f;border-bottom:1px solid #57430f;padding:8px 0;font-size:13px;overflow:hidden}
+  /* two identical copies; translating exactly one copy-width loops seamlessly */
+  .tick-track{display:flex;width:max-content;animation:scroll 34s linear infinite}
+  .tick-item{white-space:nowrap;color:#f5d27a}
   .ticker b{color:var(--gold)}
-  @keyframes scroll{to{transform:translateX(-100%)}}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  /* hold the ticker still while it's being read */
+  .ticker:hover .tick-track,.ticker:focus-within .tick-track{animation-play-state:paused}
+  @media(prefers-reduced-motion:reduce){
+    .tick-track{animation:none;width:auto;display:block}
+    .tick-item{white-space:normal}
+    .tick-item+.tick-item{display:none}
+    .live::before{animation:none}
+  }
+
+  /* arrears banner */
+  .arrears{background:#2f2610;border:1px solid #6b5417;border-radius:6px;padding:12px 16px;margin-top:26px;font-size:13px;color:#e8d5a8;display:flex;gap:12px;align-items:flex-start}
+  .arrears b{color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-size:11px;white-space:nowrap;padding-top:2px}
+  .arrears .clock{display:block;margin-top:8px;font-family:Consolas,monospace;font-size:12px;color:var(--gold);letter-spacing:.5px}
 
   /* section titles */
   .sect{margin:36px 0 14px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px}
   .sect h2{font-size:17px;text-transform:uppercase;letter-spacing:1.2px}
   .sect .meta{font-size:12px;color:var(--muted)}
+  /* click affordance for the dossier rows */
+  .hint{display:inline-flex;align-items:center;font-size:13.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--gold);white-space:nowrap}
+  .hintwrap{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .hintwrap .note{font-size:12px;color:#c6cdd6;padding-left:11px;border-left:1px solid var(--border);white-space:nowrap}
+  .d-tap{display:none}
+  @media(pointer:coarse){.d-click{display:none}.d-tap{display:inline}}
 
   /* table */
   .board{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}
@@ -63,6 +84,7 @@
   .statcol b{display:block;color:var(--text);font-size:14px}
   .fogsr{text-align:right;font-size:24px;font-weight:800;color:var(--accent)}
   .row.r1 .fogsr{color:var(--gold)}
+  .row.last .fogsr{color:var(--down)}
   .fogsr small{display:block;font-size:10px;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
 
   /* detail panel */
@@ -78,6 +100,22 @@
   .flag{font-size:11px;border-radius:3px;padding:2px 7px;font-weight:700;letter-spacing:.5px;display:inline-block;margin-top:8px}
   .flag.warn{background:#3a2c14;color:var(--gold);border:1px solid #57430f}
   .flag.ok{background:#15301d;color:var(--up);border:1px solid #1f4a2c}
+  .flag.bad{background:#341814;color:#ff8e80;border:1px solid #7a2f26}
+
+  /* ledger */
+  .ledger{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+  .lhead,.lrow{display:grid;grid-template-columns:104px 1fr 1.35fr 78px;gap:14px;padding:12px 16px;align-items:start}
+  .lhead{background:#161b21;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:10px 16px}
+  .lrow{border-top:1px solid var(--border);font-size:13px}
+  .lrow:hover{background:var(--panel2)}
+  .lwho{font-weight:700;font-size:12.5px}
+  .lwho span{display:block;font-weight:400;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+  .levent b{display:block;margin-bottom:2px}
+  .levent span{color:var(--muted);font-size:12px}
+  .lrule{color:#c6cdd6;font-size:12.5px}
+  .ldelta{text-align:right;font-weight:800;font-size:15px}
+  .ldelta.neg{color:var(--down)} .ldelta.pos{color:var(--up)} .ldelta.zero{color:var(--hold)}
+  .ldelta small{display:block;font-size:9.5px;font-weight:400;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
 
   /* methodology */
   .method{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:22px 24px;font-size:13.5px;color:#c6cdd6}
@@ -108,6 +146,10 @@
     .row-head,.row{grid-template-columns:44px 36px 1fr 86px}
     .statcol.hidem{display:none}
     .rank{font-size:20px}.fogsr{font-size:19px}
+    .lhead{display:none}
+    .lrow{grid-template-columns:1fr 62px;gap:8px 10px}
+    .lrow .lwho{grid-column:1/-1}
+    .lrow .lrule{grid-column:1/-1;border-top:1px dashed var(--border);padding-top:8px}
   }
 </style>
 </head>
@@ -116,7 +158,7 @@
 <div class="topbar">
   <div class="wrap">
     <span>FSLR COMPETITIVE INTEGRITY COMMITTEE &nbsp;|&nbsp; GLOBAL RANKING AUTHORITY</span>
-    <span class="live">LIVE &mdash; Ranking Period 2026.06</span>
+    <span class="live">LIVE &mdash; Ranking Period 2026.08</span>
   </div>
 </div>
 
@@ -133,18 +175,41 @@
   </div>
 </header>
 
-<div class="ticker"><span>
-  <b>BREAKING:</b> Ludwig rises to #2 following reported 1v1 League of Legends tournament performance &mdash; claim self-reported on live broadcast and accepted without verification per FSLR Charter §4.2 ("Whatever He Says") &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-  <b>RULING:</b> Rae's Platinum 3 rating adjusted downward after Agent Pool audit reveals 100% Viper pick rate &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-  <b>NOTICE:</b> Squeex remains exempt from Valorant evaluation; committee cites "skill ceiling exceeds measurement instrument" &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-  <b>REMINDER:</b> All rankings are final. The committee does not respond to chat.
-</span></div>
+<div class="ticker">
+  <div class="tick-track">
+    <span class="tick-item">
+      <b>BREAKING:</b> Ludwig falls to #4 despite posting the only upward CS2 movement on the board; committee cites a university, a baseball, and a fianc&eacute;e &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>RULING:</b> Rae's Viper penalty partially rescinded under the Mecca Chameleon Clause &mdash; gain fully absorbed by a 5,300-point Premier collapse &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>FINDING:</b> Ludwig's Street Fighter victory over Tyler1 admitted as psychological operations; mechanical credit withheld in full &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>PROMOTION:</b> Fuslie to #2 after entering Abe's $100,000 Valorant tournament &mdash; the only sanctioned competition entered by anyone on this board &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>NOTICE:</b> Ludwig, Rae and Fuslie owe one (1) 24-hour stream by December 31 for missing their CS2 rating target; Squeex hit his and owes nothing &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>REMINDER:</b> All rankings are final. The committee does not respond to chat. &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    </span>
+    <span class="tick-item" aria-hidden="true">
+      <b>BREAKING:</b> Ludwig falls to #4 despite posting the only upward CS2 movement on the board; committee cites a university, a baseball, and a fianc&eacute;e &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>RULING:</b> Rae's Viper penalty partially rescinded under the Mecca Chameleon Clause &mdash; gain fully absorbed by a 5,300-point Premier collapse &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>FINDING:</b> Ludwig's Street Fighter victory over Tyler1 admitted as psychological operations; mechanical credit withheld in full &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>PROMOTION:</b> Fuslie to #2 after entering Abe's $100,000 Valorant tournament &mdash; the only sanctioned competition entered by anyone on this board &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>NOTICE:</b> Ludwig, Rae and Fuslie owe one (1) 24-hour stream by December 31 for missing their CS2 rating target; Squeex hit his and owes nothing &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <b>REMINDER:</b> All rankings are final. The committee does not respond to chat. &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    </span>
+  </div>
+</div>
 
 <div class="wrap">
 
+  <div class="arrears">
+    <b>Forfeit Pending</b>
+    <div>One (1) 24-hour stream is owed by Ludwig, Rae, and Fuslie for failing to reach their agreed CS2 rating target, due <b>on or before December 31, 2026</b>. The committee stresses that the three are <b>not delinquent</b> &mdash; the deadline has not passed and no penalty applies. They are simply, at this moment, some distance out and zero hours in. <b>Squeex owes nothing</b>; he hit his number, so the forfeit never attached to him in the first place.
+      <span class="clock" id="clock">DEADLINE 2026-12-31 &nbsp;&bull;&nbsp; <span id="dleft">CALCULATING&hellip;</span> &nbsp;&bull;&nbsp; 0 OF 24 HOURS SERVED</span></div>
+  </div>
+
   <div class="sect">
-    <h2>World Ranking &mdash; June 10, 2026</h2>
-    <span class="meta">FOGSR™ Rating 3.0 &nbsp;|&nbsp; click a player for full dossier</span>
+    <h2>World Ranking &mdash; August 1, 2026</h2>
+    <span class="hintwrap">
+      <span class="hint"><span class="d-click">Click</span><span class="d-tap">Tap</span>&nbsp;player for more</span>
+      <span class="note">FOGSR&trade; Rating 3.1</span>
+    </span>
   </div>
 
   <div class="board">
@@ -152,7 +217,7 @@
       <span>Rank</span><span>+/-</span><span>Player</span>
       <span class="statcol hidem" style="text-align:center">CS2 Premier</span>
       <span class="statcol hidem" style="text-align:center">Valorant</span>
-      <span style="text-align:right">FOGSR™</span>
+      <span style="text-align:right">FOGSR&trade;</span>
     </div>
 
     <!-- 1 SQUEEX -->
@@ -165,86 +230,171 @@
       </div>
       <div class="statcol hidem"><b>25,000+</b>FACEIT 10</div>
       <div class="statcol hidem"><b>EXEMPT</b>see ruling</div>
-      <div class="fogsr">1.47<small>rating</small></div>
+      <div class="fogsr">1.46<small>rating</small></div>
     </div>
     <div class="detail" id="d1">
       <div class="dgrid">
-        <div class="stat"><div class="k">CS2 Premier</div><div class="v">25,000+</div><div class="n">Top of the ladder. Verified repeatedly, reluctantly, by everyone he queues against.</div></div>
-        <div class="stat"><div class="k">FACEIT</div><div class="v">Level 10</div><div class="n">Maximum value. The scale does not go higher. The committee checked.</div></div>
-        <div class="stat"><div class="k">Speedrun Division</div><div class="v">SM64 &mdash; 72 Star, 50+ min</div><div class="n">Legacy Skill Coefficient applied at full weight.</div></div>
-        <div class="stat"><div class="k">Valorant</div><div class="v">Exempt</div><div class="n">Per Committee Ruling 2026-03: "skill ceiling exceeds measurement instrument."</div></div>
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">25,000+</div><div class="n">Unmoved. Unbothered. The only rating on this board that did not go anywhere unpleasant.</div></div>
+        <div class="stat"><div class="k">FACEIT</div><div class="v">Level 10</div><div class="n">Maximum value. The scale still does not go higher. The committee re-checked in July.</div></div>
+        <div class="stat"><div class="k">Daily Viewership</div><div class="v">&ndash;50%</div><div class="n">Down by half. Cause: FSLR schedule congestion. Effect on rating: none. Views are not a skill.</div></div>
+        <div class="stat"><div class="k">Observation Sample</div><div class="v">Reduced</div><div class="n">&ndash;0.01 applied for diminished sample size. The committee cannot rank what it cannot watch.</div></div>
+        <div class="stat"><div class="k">24-Hour Stream</div><div class="v">EXEMPT</div><div class="n">Hit the CS2 rating target. The forfeit never attached. The other three are less fortunate.</div></div>
       </div>
-      <div class="resume"><b>Committee assessment:</b> The reference point against which the other three are measured. Mechanical aim, speedrun discipline, and the quiet menace of someone who is simply better at video games. FOGSR 1.47 represents the largest gap between #1 and #2 in ranking history.</div>
+      <div class="resume"><b>Committee assessment:</b> Retains #1 by the largest margin in the ranking's history, having achieved this in August through the novel strategy of not getting engaged, not accepting a faculty position, and not throwing a ceremonial pitch. He is also the only player on this board who owes no 24-hour stream, having reached the CS2 rating target the other three agreed to and then did not reach &mdash; a forfeit he avoided by the straightforward method of being good at the game. The 0.01 deduction reflects reduced viewership only and should not be read as criticism. The gap to #2 is now 0.49, the widest #1-to-#2 margin ever recorded, achieved entirely without effort on his part.</div>
       <span class="flag ok">STATUS: UNCONTESTED</span>
     </div>
 
-    <!-- 2 LUDWIG -->
+    <!-- 2 FUSLIE -->
     <div class="row" onclick="tg('d2')">
       <span class="rank">#2</span>
-      <span class="move up">&#9650;2</span>
+      <span class="move up">&#9650;1</span>
       <div class="pl">
-        <div class="ava" style="background:linear-gradient(135deg,#7ec8f5,#3a86c8)">LU</div>
-        <div><div class="nick">Ludwig</div><div class="real">Self-Reported Phenom</div></div>
+        <div class="ava" style="background:linear-gradient(135deg,#f2a3c4,#c75d8f)">FU</div>
+        <div><div class="nick">Fuslie</div><div class="real">The Only Entrant</div></div>
       </div>
-      <div class="statcol hidem"><b>11,500</b>Premier</div>
-      <div class="statcol hidem"><b>Platinum*</b>carried</div>
-      <div class="fogsr">1.09<small>rating</small></div>
+      <div class="statcol hidem"><b>6,800</b>unchanged</div>
+      <div class="statcol hidem"><b>Bronze 3</b>drafted</div>
+      <div class="fogsr">0.97<small>rating</small></div>
     </div>
     <div class="detail" id="d2">
       <div class="dgrid">
-        <div class="stat"><div class="k">CS2 Premier</div><div class="v">11,500</div><div class="n">Highest of the non-Squeex division. He will mention this.</div></div>
-        <div class="stat"><div class="k">League of Legends</div><div class="v">Platinum</div><div class="n">Recent form: 1v1 tournament appearance (source: himself, live, unprompted).</div></div>
-        <div class="stat"><div class="k">Valorant</div><div class="v">Platinum*</div><div class="n">*Carry Coefficient ×0.40 applied — duo partner skill discrepancy detected.</div></div>
-        <div class="stat"><div class="k">Live Tournament Adjustment</div><div class="v">+0.21</div><div class="n">Awarded under Charter §4.2 ("Whatever He Says"). Verification pending since broadcast.</div></div>
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">6,800</div><div class="n">Identical to June. Not similar. Identical. A rating cannot decay if it is never placed at risk.</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Bronze 3</div><div class="n">Also identical to June. The committee finds this deeply reassuring.</div></div>
+        <div class="stat"><div class="k">Abe's $100,000 Valorant Tournament</div><div class="v">ENTERED</div><div class="n">Drafted into a real tournament, with a real bracket, for real money. Nobody else did this.</div></div>
+        <div class="stat"><div class="k">Competitive Participation Bonus</div><div class="v">+0.06</div><div class="n">Awarded under §12.1 for entering sanctioned competition. Base 0.91 &rarr; 0.97.</div></div>
+        <div class="stat"><div class="k">Micro Decay Coefficient</div><div class="v">&times;1.00</div><div class="n">Exempt. Did not attend any university. Remained, throughout, a person who plays video games.</div></div>
+        <div class="stat"><div class="k">Off-Ladder Deductions</div><div class="v">0.00</div><div class="n">Zero life events logged this period. The committee's highest compliment.</div></div>
       </div>
-      <div class="resume"><b>Committee assessment:</b> Veteran of game shows, chessboxing, Melee, and now, reportedly, 1v1 League of Legends. Base rating 0.88 elevated to 1.09 by the largest Live Tournament Adjustment ever granted on the strength of a single on-stream claim. The committee notes the claim was delivered confidently.</div>
-      <span class="flag warn">RANK UNDER REVIEW &mdash; EVIDENCE: TRUST</span>
+      <div class="resume"><b>Committee assessment:</b> Promoted to #2 on the strength of the single rarest act of the ranking period: she entered a tournament. While the rest of the board accepted faculty positions, threw ceremonial pitches, and got engaged, Fuslie was drafted into <b>Abe's $100,000 Valorant tournament</b> &mdash; an actual bracket, with actual stakes, played against actual opponents. Her Premier rating is unchanged at 6,800 and her Valorant rank remains Bronze 3, neither of which the committee cares about this month. She competed. The others attended things. The gap between those two verbs is the entire ranking.</div>
+      <span class="flag ok">STATUS: THE ONLY ONE WHO ENTERED ANYTHING</span>
     </div>
 
-    <!-- 3 FUSLIE -->
+    <!-- 3 RAE -->
     <div class="row" onclick="tg('d3')">
       <span class="rank">#3</span>
-      <span class="move down">&#9660;1</span>
+      <span class="move up">&#9650;1</span>
       <div class="pl">
-        <div class="ava" style="background:linear-gradient(135deg,#f2a3c4,#c75d8f)">FU</div>
-        <div><div class="nick">Fuslie</div><div class="real">Two-Game Bronze Threat</div></div>
+        <div class="ava" style="background:linear-gradient(135deg,#b08df0,#6e4bc9)">RA</div>
+        <div><div class="nick">Rae</div><div class="real">Mecca Chameleon</div></div>
       </div>
-      <div class="statcol hidem"><b>6,800</b>Premier</div>
-      <div class="statcol hidem"><b>Bronze 3</b>&nbsp;</div>
-      <div class="fogsr">1.04<small>rating</small></div>
+      <div class="statcol hidem"><b>5,700</b>&#9660;5,300</div>
+      <div class="statcol hidem"><b>Plat 3</b>penalty eased</div>
+      <div class="fogsr">0.86<small>rating</small></div>
     </div>
     <div class="detail" id="d3">
       <div class="dgrid">
-        <div class="stat"><div class="k">CS2 Premier</div><div class="v">6,800</div><div class="n">Rating has dipped. The committee is choosing to not acknowledge this for ranking purposes.</div></div>
-        <div class="stat"><div class="k">Valorant</div><div class="v">Bronze 3</div><div class="n">Eligible for full Range Bonus (see below).</div></div>
-        <div class="stat"><div class="k">League of Legends</div><div class="v">Bronze</div><div class="n">Ranked in two separate titles. Both Bronze. Breadth Bonus: ×1.15.</div></div>
-        <div class="stat"><div class="k">Range Bonus</div><div class="v">×1.15</div><div class="n">Demonstrating consistent Bronze-level performance across multiple genres is, statistically, range.</div></div>
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">5,700</div><div class="n">Down 5,300 from June. Largest single-period Premier decline ever recorded on this board.</div></div>
+        <div class="stat"><div class="k">Valorant</div><div class="v">Platinum 3</div><div class="n">Viper penalty eased from &times;0.25 to &times;0.55 under the Mecca Chameleon Clause. Net +0.10.</div></div>
+        <div class="stat"><div class="k">Micro Decay Coefficient</div><div class="v">&times;0.82</div><div class="n">Streamer University attendance. Time spent on campus is time not spent in deathmatch.</div></div>
+        <div class="stat"><div class="k">Mecca Chameleon Index</div><div class="v">0.55 / 1.00</div><div class="n">Adaptability now demonstrated in a non-gaming environment. The committee counts it. Reluctantly.</div></div>
       </div>
-      <div class="resume"><b>Committee assessment:</b> Displaced from #2 through no fault of her own. Holds ranked placements in two competitive titles — a feat of breadth the committee has chosen to reward — and a Premier rating that the committee is treating as a temporary fluctuation and nothing more. Ranking reflects versatility, longevity, and the committee's scoring weights working exactly as designed.</div>
-      <span class="flag ok">STATUS: STABLE &mdash; APPEAL DENIED PREEMPTIVELY</span>
+      <div class="resume"><b>Committee assessment:</b> Rae attended Streamer University alongside Ludwig and returned with measurably worse aim and measurably better instincts. Her Premier rating has collapsed by over five thousand points, an outcome that would ordinarily be catastrophic and here merely results in a promotion. She finishes above Ludwig on the strength of <b>Mecca Chameleon</b> adaptability &mdash; the ability to change form to suit the room &mdash; which the committee has ruled is the closest thing to a transferable skill anyone brought back from campus.</div>
+      <span class="flag warn">PENALTY EASED &mdash; RATING COLLAPSED ANYWAY</span>
     </div>
 
-    <!-- 4 RAE -->
-    <div class="row" onclick="tg('d4')">
+    <!-- 4 LUDWIG -->
+    <div class="row last" onclick="tg('d4')">
       <span class="rank">#4</span>
-      <span class="move down">&#9660;1</span>
+      <span class="move down">&#9660;2</span>
       <div class="pl">
-        <div class="ava" style="background:linear-gradient(135deg,#b08df0,#6e4bc9)">RA</div>
-        <div><div class="nick">Rae</div><div class="real">Viper One-Trick (Audited)</div></div>
+        <div class="ava" style="background:linear-gradient(135deg,#7ec8f5,#3a86c8)">LU</div>
+        <div><div class="nick">Ludwig</div><div class="real">Professor. Fianc&eacute;. Pitcher.</div></div>
       </div>
-      <div class="statcol hidem"><b>11,000</b>Premier</div>
-      <div class="statcol hidem"><b>Plat 3*</b>adjusted</div>
-      <div class="fogsr">1.01<small>rating</small></div>
+      <div class="statcol hidem"><b>12,000</b>&#9650;500</div>
+      <div class="statcol hidem"><b>Platinum*</b>carried</div>
+      <div class="fogsr">0.41<small>rating</small></div>
     </div>
     <div class="detail" id="d4">
       <div class="dgrid">
-        <div class="stat"><div class="k">CS2 Premier</div><div class="v">11,500</div><div class="n">A fine rating. The committee has no notes here.</div></div>
-        <div class="stat"><div class="k">Valorant</div><div class="v">Platinum 3*</div><div class="n">*Agent Pool audit: 100% Viper. Diversity Multiplier ×0.25 applied per §7.1.</div></div>
-        <div class="stat"><div class="k">Agent Pool Diversity Index</div><div class="v">0.25 / 1.00</div><div class="n">One (1) agent detected. The committee asks: but can she do it on Sage?</div></div>
-        <div class="stat"><div class="k">Effective Val Rating</div><div class="v">Plat 3 × 0.25 ≈ Bronze-adjacent</div><div class="n">Math is math. Rulings are final.</div></div>
+        <div class="stat"><div class="k">CS2 Premier</div><div class="v">12,000</div><div class="n">Career high. Highest non-Squeex rating on the board. He is ranked last. Both facts are true.</div></div>
+        <div class="stat"><div class="k">Base Rating</div><div class="v">1.18</div><div class="n">Before deductions, the strongest August base rating of the non-Squeex division.</div></div>
+        <div class="stat"><div class="k">Micro Decay Coefficient</div><div class="v">&times;0.82</div><div class="n">Streamer University. He was not a student. He was worse &mdash; he was faculty.</div></div>
+        <div class="stat"><div class="k">Off-Ladder Deductions</div><div class="v">&ndash;0.56</div><div class="n">Professorship, ceremonial pitch, engagement. Itemized in the ledger below.</div></div>
+        <div class="stat"><div class="k">Engagement Status</div><div class="v">ENGAGED</div><div class="n">&ndash;0.41. Single largest deduction in FOGSR history. See Charter §11.</div></div>
+        <div class="stat"><div class="k">Street Fighter (vs. Tyler1)</div><div class="v">WIN &mdash; 0.00</div><div class="n">Victory confirmed. Method disqualifying. Credit withheld under the Psyop Clause.</div></div>
       </div>
-      <div class="resume"><b>Committee assessment:</b> Objectively holds the highest Valorant rank on this leaderboard, a fact the methodology has been carefully constructed to neutralize. The Platinum 3 achievement is acknowledged, admired, and multiplied by 0.25. The committee thanks her for her understanding and reminds her that the appeals office is a P.O. box with no mail service.</div>
-      <span class="flag warn">PENALTY ACTIVE: SINGLE-AGENT DEPENDENCY</span>
+      <div class="resume"><b>Committee assessment:</b> A ranking-period collapse without precedent. Ludwig posted the only positive CS2 movement on the entire board &mdash; up 500 to a career-high 12,000 &mdash; and finishes last, because the committee weighs what a man does with the other twenty-three hours. He accepted a faculty position. He was named <b>Professor of the Year</b>, an award for teaching people to do the thing instead of doing the thing. He threw a ceremonial first pitch at a Dodgers game, redirecting finite mechanical resource into an entirely different sport. He beat Tyler1 at Street Fighter by publicly leaking that he was practicing one character while secretly drilling another &mdash; a genuinely excellent piece of tradecraft that the committee is obligated to score as espionage rather than skill.<br><br>And then he got engaged. The committee wishes him every happiness and notes that an engaged man does not have time for video games. Rating adjusted accordingly.</div>
+      <span class="flag bad">STATUS: FREEFALL &mdash; CONGRATULATIONS THOUGH</span>
+    </div>
+  </div>
+
+  <div class="sect">
+    <h2>Off-Ladder Activity Ledger</h2>
+    <span class="meta">Ranking Period 2026.08 &mdash; things that happened instead of gaming</span>
+  </div>
+  <div class="ledger">
+    <div class="lhead">
+      <span>Player</span><span>Logged Activity</span><span>Committee Ruling</span><span style="text-align:right">Δ Rating</span>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig &amp; Rae<span>Jul 2026</span></div>
+      <div class="levent"><b>Streamer University &mdash; full attendance</b><span>Extended period away from ranked play.</span></div>
+      <div class="lrule">Micro Decay Clause §9.3. Mechanical skill is a perishable good. Neither player has meaningfully touched a mouse in anger. Coefficient ×0.82 applied to both.</div>
+      <div class="ldelta neg">×0.82<small>coefficient</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig<span>Jul 2026</span></div>
+      <div class="levent"><b>Named Professor of the Year</b><span>Streamer University faculty honor.</span></div>
+      <div class="lrule">Teaching others to perform is not performing. The committee congratulates the professor and reminds him that those who can, queue. Additionally: he was not merely present on campus, he had office hours.</div>
+      <div class="ldelta neg">&ndash;0.06<small>award</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig<span>Jul 2026</span></div>
+      <div class="levent"><b>Defeated Tyler1 &mdash; Street Fighter</b><span>Won via counter-intelligence.</span></div>
+      <div class="lrule">Psyop Clause §6.4. Subject deliberately leaked that he was practicing one character while secretly drilling another. The committee finds this admirable, effective, and entirely non-mechanical. Win recorded. Rating credit withheld in full.</div>
+      <div class="ldelta zero">0.00<small>credit withheld</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig<span>Jul 2026</span></div>
+      <div class="levent"><b>Ceremonial first pitch &mdash; Dodgers</b><span>Non-sanctioned athletic event.</span></div>
+      <div class="lrule">Finite motor resource diverted into an unrelated sport. The committee reviewed the pitch. The committee has elected to say nothing further about the pitch. Deduction reflects opportunity cost only.</div>
+      <div class="ldelta neg">&ndash;0.09<small>diversion</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig<span>Jul 2026</span></div>
+      <div class="levent"><b>Engagement</b><span>Binding personal commitment entered.</span></div>
+      <div class="lrule">Charter §11 (Off-Ladder Life Events). An engaged man has no time for games. Largest single deduction ever issued by this body. Applied with sincere congratulations and total mathematical indifference.</div>
+      <div class="ldelta neg">&ndash;0.41<small>life event</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Rae<span>Jul 2026</span></div>
+      <div class="levent"><b>Meccha Chameleon &mdash; masterpieces submitted</b><span>All present reportedly shocked.</span></div>
+      <div class="lrule">Agent Pool penalty eased from ×0.25 to ×0.55 under the Mecca Chameleon Clause. Demonstrated excellence in an adjacent competitive title, witnessed and reacted to in real time. The committee maintains this is not the same as playing a second agent, but concedes it is not nothing.</div>
+      <div class="ldelta pos">+0.10<small>eased</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Fuslie<span>Jul 2026</span></div>
+      <div class="levent"><b>Abe's $100,000 Valorant Tournament</b><span>Drafted and entered.</span></div>
+      <div class="lrule">Competitive Participation Bonus §12.1. The only player to enter a sanctioned tournament this ranking period. Real bracket, real prize pool, real opponents. The committee wishes to be unambiguous: this is the behavior it is trying to encourage, and it is why she is #2.</div>
+      <div class="ldelta pos">+0.06<small>competed</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Squeex<span>Jul 2026</span></div>
+      <div class="levent"><b>Daily viewership down 50%</b><span>Cause: FSLR schedule congestion.</span></div>
+      <div class="lrule">The committee ranks skill, not reach, and declines to penalize the metric. A nominal ×0.01 is applied for reduced observation sample: fewer broadcasts means fewer matches to review, and the committee's confidence interval widened slightly.</div>
+      <div class="ldelta neg">&ndash;0.01<small>sample size</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Squeex<span>Exempt</span></div>
+      <div class="levent"><b>24-hour stream &mdash; NEVER INCURRED</b><span>CS2 rating target met.</span></div>
+      <div class="lrule">The forfeit applies only to players who failed to reach the agreed CS2 rating. Squeex reached it, and then kept going for some distance past it. No obligation ever attached. The committee notes he is the only person in this group who treated the target as a floor.</div>
+      <div class="ldelta pos">EXEMPT<small>hit his number</small></div>
+    </div>
+
+    <div class="lrow">
+      <div class="lwho">Ludwig, Rae<br>&amp; Fuslie<span>Due 12.31.26</span></div>
+      <div class="levent"><b>24-hour stream &mdash; FORFEIT OWED</b><span>CS2 target missed. Due December 31, 2026.</span></div>
+      <div class="lrule">All three failed to reach the agreed CS2 rating and owe the stream accordingly. No penalty applies to the rating and none is threatened; the deadline is months away. The committee records only that in the time available so far, one of them earned a teaching award, one attended a university, and one got engaged &mdash; and that none of that was twenty-four consecutive hours, nor was it CS2. The committee will check back in December, along with everyone else.</div>
+      <div class="ldelta zero">PENDING<small>clock running</small></div>
     </div>
   </div>
 
@@ -254,8 +404,26 @@
   </div>
   <div class="vids">
     <div class="vid">
-      <button class="facade" data-vid="tvXrkLT_Yic" aria-label="Play: Mario Party ft. Valkyrae, Squeex & Fuslie">
-        <img src="https://i.ytimg.com/vi/tvXrkLT_Yic/hqdefault.jpg" alt="Mario Party ft. Valkyrae, Squeex & Fuslie"><span class="play"></span>
+      <button class="facade" data-vid="fg8zZCa9z_g" aria-label="Play: I&#39;m Getting Married &mdash; Ludwig">
+        <img src="https://i.ytimg.com/vi/fg8zZCa9z_g/hqdefault.jpg" alt="Ludwig: I'm Getting Married."><span class="play"></span>
+      </button>
+      <div class="cap"><b>Exhibit A: &ldquo;I'm Getting Married.&rdquo;</b><span>Primary evidence for the &ndash;0.41 deduction. Submitted by the athlete himself, as is tradition.</span></div>
+    </div>
+    <div class="vid">
+      <button class="facade" data-vid="wDY1lbyzZlc" aria-label="Play: They were all SHOCKED at my Masterpieces (Meccha Chameleon) &mdash; Valkyrae">
+        <img src="https://i.ytimg.com/vi/wDY1lbyzZlc/hqdefault.jpg" alt="Valkyrae: Meccha Chameleon masterpieces"><span class="play"></span>
+      </button>
+      <div class="cap"><b>Skill Assessment: Meccha Chameleon</b><span>Masterpieces entered into evidence. All present reportedly shocked. Clause drafted same day.</span></div>
+    </div>
+    <div class="vid">
+      <button class="facade" data-vid="kEe2RJrqo_U" aria-label="Play: Fuslie Reacts To Abe&#39;s $100,000 VALORANT Tournament Draft">
+        <img src="https://i.ytimg.com/vi/kEe2RJrqo_U/hqdefault.jpg" alt="Abe's $100,000 Valorant Tournament draft"><span class="play"></span>
+      </button>
+      <div class="cap"><b>Draft Coverage: Abe's $100,000 Valorant Tournament</b><span>The only sanctioned competitive entry logged by anyone this period.</span></div>
+    </div>
+    <div class="vid">
+      <button class="facade" data-vid="tvXrkLT_Yic" aria-label="Play: Mario Party ft. Valkyrae, Squeex &amp; Fuslie">
+        <img src="https://i.ytimg.com/vi/tvXrkLT_Yic/hqdefault.jpg" alt="Mario Party ft. Valkyrae, Squeex &amp; Fuslie"><span class="play"></span>
       </button>
       <div class="cap"><b>Sanctioned Event: Mario Party</b><span>Admitted into evidence. Star counts under seal.</span></div>
     </div>
@@ -263,7 +431,7 @@
       <button class="facade" data-vid="t0M2vOoS02U" aria-label="Play: Ludwig Plays Mario Party with Valkyrae, Fuslie, Squeex">
         <img src="https://i.ytimg.com/vi/t0M2vOoS02U/hqdefault.jpg" alt="Ludwig Plays Mario Party"><span class="play"></span>
       </button>
-      <div class="cap"><b>Sanctioned Event: Mario Party (Ludwig POV)</b><span>POV footage submitted by the athlete himself. Naturally.</span></div>
+      <div class="cap"><b>Sanctioned Event: Mario Party (Ludwig POV)</b><span>Retained in the archive as a record of a simpler, unengaged time.</span></div>
     </div>
     <div class="vid">
       <button class="facade" data-vid="gfGpp5Y9IXg" aria-label="Play: Team FSLR faces the ultimate gamer gauntlet">
@@ -275,33 +443,51 @@
 
   <div class="sect">
     <h2>Ranking Methodology</h2>
-    <span class="meta">FOGSR™ Rating 3.0 &mdash; peer-reviewed by the peers being ranked</span>
+    <span class="meta">FOGSR&trade; Rating 3.1 &mdash; peer-reviewed by the peers being ranked</span>
   </div>
   <div class="method">
     <h3>The Formula</h3>
-    <div class="formula">FOGSR = (CS2 × 0.45) + (TAC_FPS × APD × CC × 0.20) + (MOBA × 0.15) + (LEGACY × 0.20) + LTA</div>
+    <div class="formula">FOGSR = [(CS2 × 0.45) + (TAC_FPS × APD × CC × 0.20) + (MOBA × 0.15) + (LEGACY × 0.20) + LTA] × MDC − OLE</div>
     <h3>Coefficient Definitions</h3>
     <ol>
-      <li><b>CS2 (45%)</b> — Premier rating, normalized. Weighted heaviest because it is the category in which the rankings happened to already be correct.</li>
-      <li><b>APD — Agent Pool Diversity Multiplier</b> — Valorant ratings achieved with a single agent are scaled ×0.25. Flexibility is a skill. Lineups are not a personality.</li>
-      <li><b>CC — Carry Coefficient</b> — Ranks achieved while duo-queued with a measurably superior partner are scaled ×0.40. The committee can tell. The committee can always tell.</li>
-      <li><b>LEGACY — Legacy Skill Coefficient</b> — Credits speedrunning, FACEIT level, and historical mechanical achievement. Currently benefits exactly one player. This is a coincidence.</li>
-      <li><b>LTA — Live Tournament Adjustment</b> — A flat bonus granted when a player states, on a live broadcast, that they performed well in a tournament. Footage optional. Confidence mandatory. (Charter §4.2.)</li>
+      <li><b>CS2 (45%)</b> — Premier rating, normalized. Weighted heaviest because it is the category in which the rankings happened to already be correct. It is no longer the category in which the rankings are correct. The weight remains 45%.</li>
+      <li><b>MDC — Micro Decay Coefficient <span style="color:var(--gold)">(new, 3.1)</span></b> — Mechanical skill is perishable. Players who spend a ranking period away from ranked play — at, for example, a university — are scaled ×0.82. Players who were not maintaining measurable micro to begin with are exempt, as there is nothing to decay.</li>
+      <li><b>OLE — Off-Ladder Life Events <span style="color:var(--gold)">(new, 3.1)</span></b> — A flat deduction for time-consuming personal or professional developments outside competitive gaming. Weighted by estimated hours removed from the queue. Engagements carry the maximum published value (−0.41). The committee wishes to be clear that this is happiness-neutral and rating-negative.</li>
+      <li><b>Mecca Chameleon Clause <span style="color:var(--gold)">(new, 3.1)</span></b> — Where a player demonstrates excellence in an adjacent competitive title, the Agent Pool Diversity penalty may be eased from ×0.25 to ×0.55. It may not be lifted. She still plays one agent.</li>
+      <li><b>§12.1 — Competitive Participation Bonus <span style="color:var(--gold)">(new, 3.1)</span></b> — A flat +0.06 for entering a sanctioned tournament during the ranking period. Introduced this period because exactly one player did, and the committee wished to make an example of her in the positive direction.</li>
+      <li><b>Psyop Clause §6.4 <span style="color:var(--gold)">(new, 3.1)</span></b> — Victories secured primarily through deception, misdirection, or deliberate disinformation regarding character selection are recorded as wins and scored as zero. The committee is a fan of the bit. The committee measures hands.</li>
+      <li><b>APD / CC / LEGACY / LTA</b> — Agent Pool Diversity, Carry Coefficient, Legacy Skill, and Live Tournament Adjustment carry forward unchanged from 3.0. The LTA remains available to any player willing to state on a live broadcast that they did well at something.</li>
     </ol>
     <h3>Independence Statement</h3>
-    <p>The FSLR Competitive Integrity Committee certifies that all weights were selected before checking what results they would produce, in the sense that they were adjusted afterward until the results matched. Any resemblance between this ranking and the committee's pre-existing opinions is coincidental and also intentional.</p>
-    <p class="fine">FOGSR™ is a registered trademark of nobody. Methodology subject to change retroactively, especially if Squeex loses at anything. Appeals may be submitted in writing and will be graded on penmanship, then discarded.</p>
+    <p>The FSLR Competitive Integrity Committee certifies that the three new coefficients introduced in Rating 3.1 were developed in response to observed player behavior, and not, as alleged, in response to one specific player's July. The committee notes that the coefficients apply universally and that it is not the committee's fault only one player triggered all of them.</p>
+    <p class="fine">FOGSR™ is a registered trademark of nobody. Methodology subject to change retroactively, especially if Squeex loses at anything. Appeals may be submitted in writing and will be graded on penmanship, then discarded. Three of you have until December 31. The committee is aware you know that.</p>
   </div>
 
   <footer>
     FSLR Official Gamer Skill Ranking &copy; 2026 — A wholly unofficial parody operated by fans.<br>
-    Not affiliated with Fuslie, Squeex, Ludwig, Valkyrae, Riot Games, Valve, FACEIT, Nintendo, or any governing body, real or imagined.<br>
-    All rankings final. The committee has gone home.
+    Not affiliated with Fuslie, Squeex, Ludwig, Valkyrae, Riot Games, Valve, FACEIT, Nintendo, the Los Angeles Dodgers, Streamer University, or any governing body, real or imagined.<br>
+    All rankings final. Congratulations, Ludwig. The committee has gone home.
   </footer>
 
 </div>
 
 <script>
+// Deadline clock. Static numbers go stale; this one doesn't.
+(function(){
+  const el=document.getElementById('dleft');
+  if(!el) return;
+  const due=new Date(2026,11,31,23,59,59); // Dec 31, 2026, local time
+  function render(){
+    const days=Math.floor((due-new Date())/86400000);
+    if(days>1)       el.textContent=days+' DAYS REMAINING';
+    else if(days===1)el.textContent='1 DAY REMAINING';
+    else if(days===0)el.textContent='DUE TODAY';
+    else             el.textContent='DEADLINE PASSED — COMMITTEE TAKING THIS PERSONALLY';
+  }
+  render();
+  setInterval(render,60000);
+})();
+
 function tg(id){
   const el=document.getElementById(id);
   const open=el.classList.contains('open');
