@@ -62,7 +62,9 @@
   .sect h2{font-size:17px;text-transform:uppercase;letter-spacing:1.2px}
   .sect .meta{font-size:12px;color:var(--muted)}
   /* click affordance for the dossier rows */
-  .hint{display:inline-flex;align-items:center;font-size:13.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--gold);white-space:nowrap}
+  .hint{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;
+        color:var(--gold);white-space:nowrap;border:1px solid #57430f;background:#2f2610;border-radius:999px;padding:4px 12px}
+  .hint::after{content:"";width:6px;height:6px;border-right:1.8px solid currentColor;border-bottom:1.8px solid currentColor;transform:translateY(-2px) rotate(45deg)}
   .hintwrap{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
   .hintwrap .note{font-size:12px;color:#c6cdd6;padding-left:11px;border-left:1px solid var(--border);white-space:nowrap}
   .d-tap{display:none}
@@ -70,10 +72,23 @@
 
   /* table */
   .board{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-  .row-head,.row{display:grid;grid-template-columns:64px 56px 1fr 110px 110px 96px;align-items:center;padding:0 14px}
+  .row-head,.row{display:grid;grid-template-columns:64px 56px 1fr 110px 110px 96px 34px;align-items:center;padding:0 14px}
   .row-head{background:#161b21;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);height:36px}
-  .row{height:78px;border-top:1px solid var(--border);cursor:pointer;transition:background .15s}
+  .row{height:78px;border-top:1px solid var(--border);cursor:pointer;transition:background .15s,box-shadow .15s}
   .row:hover{background:var(--panel2)}
+  .row:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+  /* open state: gold edge marks which dossier is showing */
+  .row.open{background:var(--panel2);box-shadow:inset 3px 0 0 var(--gold)}
+
+  /* disclosure chevron — the only click cue that survives on touch */
+  .chev{justify-self:end;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);
+        display:flex;align-items:center;justify-content:center;color:var(--muted);
+        transition:transform .2s,background .15s,border-color .15s,color .15s}
+  .chev::before{content:"";width:6px;height:6px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+                transform:translateY(-2px) rotate(45deg)}
+  .row:hover .chev{border-color:var(--gold);color:var(--gold);background:#2f2610}
+  .row.open .chev{transform:rotate(180deg);border-color:var(--gold);background:var(--gold);color:#11151a}
+  @media(prefers-reduced-motion:reduce){.chev{transition:none}}
   .rank{font-size:26px;font-weight:800;color:var(--muted)}
   .row.r1 .rank{color:var(--gold)}
   .move{font-size:13px;font-weight:700}
@@ -145,9 +160,10 @@
   footer{margin:48px 0 0;border-top:1px solid var(--border);padding:22px 0 34px;font-size:11.5px;color:var(--muted);text-align:center;line-height:1.8}
 
   @media(max-width:640px){
-    .row-head,.row{grid-template-columns:44px 36px 1fr 86px}
+    .row-head,.row{grid-template-columns:40px 32px 1fr 76px 28px;padding:0 10px}
     .statcol.hidem{display:none}
     .rank{font-size:20px}.fogsr{font-size:19px}
+    .chev{width:22px;height:22px}
     .lhead{display:none}
     .lrow{grid-template-columns:1fr 62px;gap:8px 10px}
     .lrow .lwho{grid-column:1/-1}
@@ -222,10 +238,11 @@
       <span class="statcol hidem" style="text-align:center">CS2 Premier</span>
       <span class="statcol hidem" style="text-align:center">Valorant</span>
       <span style="text-align:right">FOGSR&trade;</span>
+      <span></span>
     </div>
 
     <!-- 1 SQUEEX -->
-    <div class="row r1" onclick="tg('d1')">
+    <div class="row r1" onclick="tg('d1')" role="button" tabindex="0" aria-expanded="false" aria-controls="d1">
       <span class="rank">#1</span>
       <span class="move hold">&ndash;</span>
       <div class="pl">
@@ -235,6 +252,7 @@
       <div class="statcol hidem"><b>25,000+</b>FACEIT 10</div>
       <div class="statcol hidem"><b>EXEMPT</b>see ruling</div>
       <div class="fogsr">1.47<small>rating</small></div>
+      <span class="chev" aria-hidden="true"></span>
     </div>
     <div class="detail" id="d1">
       <div class="dgrid">
@@ -249,7 +267,7 @@
     </div>
 
     <!-- 2 RAE -->
-    <div class="row" onclick="tg('d2')">
+    <div class="row" onclick="tg('d2')" role="button" tabindex="0" aria-expanded="false" aria-controls="d2">
       <span class="rank">#2</span>
       <span class="move up">&#9650;1</span>
       <div class="pl">
@@ -259,6 +277,7 @@
       <div class="statcol hidem"><b>13,736</b>&#9650;8,036</div>
       <div class="statcol hidem"><b>Plat 3</b>penalty eased</div>
       <div class="fogsr">1.21<small>rating</small></div>
+      <span class="chev" aria-hidden="true"></span>
     </div>
     <div class="detail" id="d2">
       <div class="dgrid">
@@ -274,7 +293,7 @@
     </div>
 
     <!-- 3 FUSLIE -->
-    <div class="row" onclick="tg('d3')">
+    <div class="row" onclick="tg('d3')" role="button" tabindex="0" aria-expanded="false" aria-controls="d3">
       <span class="rank">#3</span>
       <span class="move down">&#9660;1</span>
       <div class="pl">
@@ -284,6 +303,7 @@
       <div class="statcol hidem"><b>6,800</b>unchanged</div>
       <div class="statcol hidem"><b>Bronze 3</b>unchanged</div>
       <div class="fogsr">0.91<small>rating</small></div>
+      <span class="chev" aria-hidden="true"></span>
     </div>
     <div class="detail" id="d3">
       <div class="dgrid">
@@ -298,7 +318,7 @@
     </div>
 
     <!-- 4 LUDWIG -->
-    <div class="row last" onclick="tg('d4')">
+    <div class="row last" onclick="tg('d4')" role="button" tabindex="0" aria-expanded="false" aria-controls="d4">
       <span class="rank">#4</span>
       <span class="move hold">&ndash;</span>
       <div class="pl">
@@ -308,6 +328,7 @@
       <div class="statcol hidem"><b>12,573</b>+2 in 100h</div>
       <div class="statcol hidem"><b>Platinum*</b>carried</div>
       <div class="fogsr">0.02<small>rating</small></div>
+      <span class="chev" aria-hidden="true"></span>
     </div>
     <div class="detail" id="d4">
       <div class="dgrid">
@@ -542,9 +563,30 @@
 function tg(id){
   const el=document.getElementById(id);
   const open=el.classList.contains('open');
+  // close everything, then open the one that was clicked (accordion)
   document.querySelectorAll('.detail').forEach(d=>d.classList.remove('open'));
-  if(!open) el.classList.add('open');
+  document.querySelectorAll('.row').forEach(r=>{
+    r.classList.remove('open');
+    r.setAttribute('aria-expanded','false');
+  });
+  if(!open){
+    el.classList.add('open');
+    const row=el.previousElementSibling;
+    if(row&&row.classList.contains('row')){
+      row.classList.add('open');
+      row.setAttribute('aria-expanded','true');
+    }
+  }
 }
+// rows are divs acting as buttons, so wire up Enter/Space by hand
+document.querySelectorAll('.row').forEach(row=>{
+  row.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){
+      e.preventDefault();
+      row.click();
+    }
+  });
+});
 // Video facades: embeds need an HTTP referrer, which file:// doesn't send.
 // Hosted -> swap in the iframe. Local file -> open YouTube in a new tab.
 document.querySelectorAll('.facade').forEach(btn=>{
